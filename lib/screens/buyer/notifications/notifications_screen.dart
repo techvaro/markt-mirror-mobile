@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
+import 'package:market_mirror_mobile/data/mock_data.dart';
+import '../orders/orders_screen.dart';
+import '../order_tracking/order_tracking_screen.dart';
+import '../shop_detail/shop_detail_screen.dart';
+import '../chat/chat_screen.dart';
 
 final List<AppNotification> _notifications = [
   AppNotification(id: 'n1', type: 'order', title: 'Order Delivered', message: 'Your PS5 from TechCity has been delivered.', time: DateTime(2026, 7, 28, 14, 30), read: true),
@@ -38,6 +43,51 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   void _clearAll() {
     setState(() => _items.clear());
+  }
+
+  void _markRead(AppNotification n) {
+    final idx = _items.indexWhere((x) => x.id == n.id);
+    if (idx < 0 || _items[idx].read) return;
+    setState(() {
+      _items[idx] = AppNotification(id: n.id, type: n.type, title: n.title, message: n.message, time: n.time, read: true, link: n.link);
+    });
+  }
+
+  Shop _findShop(String name) {
+    try {
+      return MockData.shops.firstWhere((s) => name.toLowerCase().contains(s.name.toLowerCase()) || s.name.toLowerCase().contains(name.toLowerCase()));
+    } catch (_) {
+      return MockData.shops.first;
+    }
+  }
+
+  void _open(AppNotification n) {
+    _markRead(n);
+    switch (n.type) {
+      case 'order':
+      case 'shipping':
+        if (buyerOrders.isNotEmpty) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => OrderTrackingScreen(order: buyerOrders.firstWhere((o) => o.status != OrderStatus.delivered, orElse: () => buyerOrders.first))));
+        } else {
+          _showSnack('No active orders to track');
+        }
+        break;
+      case 'promo':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ShopDetailScreen(shop: _findShop('TechCity'))));
+        break;
+      case 'review':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ShopDetailScreen(shop: _findShop('TechCity'))));
+        break;
+      case 'chat':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(shopName: 'TechCity')));
+        break;
+      default:
+        _showSnack(n.message);
+    }
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message, style: GoogleFonts.sourceSans3(fontSize: 13)), backgroundColor: AppColors.primary));
   }
 
   @override
@@ -77,14 +127,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               final icon = _typeIcon(n.type);
               final iconColor = _typeColor(n.type);
 
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: n.read ? AppColors.border : AppColors.primary.withOpacity(0.3)),
-                ),
-                child: Row(
+              return GestureDetector(
+                onTap: () => _open(n),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: n.read ? AppColors.border : AppColors.primary.withOpacity(0.3)),
+                  ),
+                  child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -114,6 +166,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       ),
                     ),
                   ],
+                ),
                 ),
               );
             },

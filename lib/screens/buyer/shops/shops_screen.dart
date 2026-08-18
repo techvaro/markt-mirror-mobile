@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
+import 'package:market_mirror_mobile/data/mock_data.dart';
 import 'package:market_mirror_mobile/providers/market_provider.dart';
+import 'package:market_mirror_mobile/widgets/chat_icon_button.dart';
+import 'package:market_mirror_mobile/widgets/city_market_selector.dart';
 import 'package:provider/provider.dart';
 import '../shop_detail/shop_detail_screen.dart';
 
 final List<String> _allCategories = ['All', 'Electronics', 'Phones', 'Fabrics', 'Appliances', 'Auto', 'Beauty'];
-final List<String> _markets = ['All Markets', 'Computer Village', 'Alaba International Market', 'Trade Fair Complex'];
 
 final List<Shop> _allShops = [
-  Shop(id: 'shop_1', name: 'TechCity', category: 'Electronics', rating: 4.8, reviewCount: 128, productCount: 4, verified: true, location: 'Shop A12, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', phone: '+234 802 345 6789', hours: 'Mon-Sat: 8AM-7PM', shopNumber: 'A12', bannerGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'),
-  Shop(id: 'shop_2', name: 'PhoneHub', category: 'Phones', rating: 4.6, reviewCount: 95, productCount: 4, verified: true, location: 'Shop B5, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', phone: '+234 803 456 7890', hours: 'Mon-Sat: 8:30AM-7PM', shopNumber: 'B5', bannerGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'),
-  Shop(id: 'shop_3', name: 'GlobalFabrics', category: 'Fabrics', rating: 4.5, reviewCount: 72, productCount: 4, verified: true, location: 'Shop C8, Trade Fair Complex, Badagry', market: 'Trade Fair Complex', city: 'Lagos', phone: '+234 805 678 9012', hours: 'Mon-Sat: 8AM-6PM', shopNumber: 'C8', bannerGradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)'),
-  Shop(id: 'shop_4', name: 'Kemis Home Appliances', category: 'Appliances', rating: 4.7, reviewCount: 84, productCount: 4, verified: true, location: 'Shop D15, Alaba International Market, Ojo', market: 'Alaba International Market', city: 'Lagos', phone: '+234 806 789 0123', hours: 'Mon-Sat: 7AM-6:30PM', shopNumber: 'D15', bannerGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'),
-  Shop(id: 'shop_5', name: 'AutoParts Pro', category: 'Auto', rating: 4.4, reviewCount: 56, productCount: 4, verified: true, location: 'Shop E7, Alaba International Market, Ojo', market: 'Alaba International Market', city: 'Lagos', phone: '+234 807 890 1234', hours: 'Mon-Sat: 7:30AM-6PM', shopNumber: 'E7', bannerGradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'),
-  Shop(id: 'shop_6', name: 'BeautyGlow Studio', category: 'Beauty', rating: 4.2, reviewCount: 43, productCount: 4, verified: false, location: 'Shop F3, Trade Fair Complex, Badagry', market: 'Trade Fair Complex', city: 'Lagos', phone: '+234 808 901 2345', hours: 'Mon-Sat: 9AM-7PM', shopNumber: 'F3', bannerGradient: 'linear-gradient(135deg, #fccb90 0%, #d57eeb 100%)'),
+  Shop(id: 'shop_1', name: 'TechCity', category: 'Electronics', rating: 4.8, reviewCount: 128, productCount: 4, verified: true, location: 'Shop A12, Otigba Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Otigba Plaza', phone: '+234 802 345 6789', hours: 'Mon-Sat: 8AM-7PM', shopNumber: 'A12', bannerGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'),
+  Shop(id: 'shop_2', name: 'PhoneHub', category: 'Phones', rating: 4.6, reviewCount: 95, productCount: 4, verified: true, location: 'Shop B5, Otigba Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Otigba Plaza', phone: '+234 803 456 7890', hours: 'Mon-Sat: 8:30AM-7PM', shopNumber: 'B5', bannerGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'),
+  Shop(id: 'shop_3', name: 'GlobalFabrics', category: 'Fabrics', rating: 4.5, reviewCount: 72, productCount: 4, verified: true, location: 'Shop C8, Memory Lane Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Memory Lane Plaza', phone: '+234 805 678 9012', hours: 'Mon-Sat: 8AM-6PM', shopNumber: 'C8', bannerGradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)'),
+  Shop(id: 'shop_4', name: 'Kemis Home Appliances', category: 'Appliances', rating: 4.7, reviewCount: 84, productCount: 4, verified: true, location: 'Shop D15, Cooperative Building, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Cooperative Building', phone: '+234 806 789 0123', hours: 'Mon-Sat: 7AM-6:30PM', shopNumber: 'D15', bannerGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'),
+  Shop(id: 'shop_5', name: 'AutoParts Pro', category: 'Auto', rating: 4.4, reviewCount: 56, productCount: 4, verified: true, location: 'Shop E7, Computer Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Computer Plaza', phone: '+234 807 890 1234', hours: 'Mon-Sat: 7:30AM-6PM', shopNumber: 'E7', bannerGradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'),
+  Shop(id: 'shop_6', name: 'BeautyGlow Studio', category: 'Beauty', rating: 4.2, reviewCount: 43, productCount: 4, verified: false, location: 'Shop F3, Data Centre Building, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Data Centre Building', phone: '+234 808 901 2345', hours: 'Mon-Sat: 9AM-7PM', shopNumber: 'F3', bannerGradient: 'linear-gradient(135deg, #fccb90 0%, #d57eeb 100%)'),
 ];
 
 class ShopsScreen extends StatefulWidget {
@@ -27,14 +29,14 @@ class ShopsScreen extends StatefulWidget {
 
 class _ShopsScreenState extends State<ShopsScreen> {
   String _selectedCategory = 'All';
-  String _selectedMarket = 'All Markets';
+  String _selectedBuilding = 'All Buildings';
   String _sortOption = 'Recommended';
   final TextEditingController _searchCtrl = TextEditingController();
 
   List<Shop> get _filteredShops {
     var list = _allShops.where((s) {
       if (_selectedCategory != 'All' && s.category != _selectedCategory) return false;
-      if (_selectedMarket != 'All Markets' && s.market != _selectedMarket) return false;
+      if (_selectedBuilding != 'All Buildings' && s.building != _selectedBuilding) return false;
       if (_searchCtrl.text.isNotEmpty && !s.name.toLowerCase().contains(_searchCtrl.text.toLowerCase())) return false;
       return true;
     }).toList();
@@ -52,6 +54,10 @@ class _ShopsScreenState extends State<ShopsScreen> {
   @override
   Widget build(BuildContext context) {
     final activeMarket = context.watch<MarketProvider>().selectedMarket;
+    final buildings = ['All Buildings', ...MockData.buildingsForMarket(activeMarket)];
+    if (_selectedBuilding != 'All Buildings' && !buildings.contains(_selectedBuilding)) {
+      _selectedBuilding = 'All Buildings';
+    }
     final filtered = _filteredShops.where((shop) => activeMarket.isEmpty || shop.market == activeMarket).toList();
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -59,9 +65,11 @@ class _ShopsScreenState extends State<ShopsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(activeMarket.isEmpty ? 'Shops' : activeMarket, overflow: TextOverflow.ellipsis, style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary)),
+        actions: const [ChatIconButton()],
       ),
       body: Column(
         children: [
+          const CityMarketSelector(),
           Container(
             color: Colors.white,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -124,11 +132,11 @@ class _ShopsScreenState extends State<ShopsScreen> {
                   decoration: BoxDecoration(border: Border.all(color: AppColors.border), borderRadius: BorderRadius.circular(8)),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      value: _selectedMarket,
+                      value: buildings.contains(_selectedBuilding) ? _selectedBuilding : 'All Buildings',
                       isDense: true,
                       style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textPrimary),
-                      items: _markets.map((m) => DropdownMenuItem(value: m, child: Text(m, style: GoogleFonts.sourceSans3(fontSize: 12)))).toList(),
-                      onChanged: (v) => setState(() => _selectedMarket = v!),
+                      items: buildings.map((b) => DropdownMenuItem(value: b, child: Text(b, style: GoogleFonts.sourceSans3(fontSize: 12), overflow: TextOverflow.ellipsis))).toList(),
+                      onChanged: (v) => setState(() => _selectedBuilding = v!),
                     ),
                   ),
                 ),

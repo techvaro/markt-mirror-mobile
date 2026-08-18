@@ -1,8 +1,11 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
+import 'package:market_mirror_mobile/providers/market_provider.dart';
+import 'package:market_mirror_mobile/widgets/chat_icon_button.dart';
+import 'package:market_mirror_mobile/widgets/city_market_selector.dart';
+import 'package:provider/provider.dart';
 
 class MapsScreen extends StatefulWidget {
   const MapsScreen({super.key});
@@ -60,6 +63,7 @@ class _MapsScreenState extends State<MapsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedMarket = context.watch<MarketProvider>().selectedMarket;
     final shops = _filteredShops;
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -67,9 +71,21 @@ class _MapsScreenState extends State<MapsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text('Market Map', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.primary)),
+        actions: const [ChatIconButton()],
       ),
       body: Column(
         children: [
+          const CityMarketSelector(),
+          if (selectedMarket.isNotEmpty)
+            Container(
+              width: double.infinity,
+              color: AppColors.primaryContainer,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Text(
+                'You are viewing $selectedMarket',
+                style: GoogleFonts.sourceSans3(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
+              ),
+            ),
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             color: Colors.white,

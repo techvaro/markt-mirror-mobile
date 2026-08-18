@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
+import 'package:market_mirror_mobile/widgets/app_logo.dart';
 import 'login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -18,18 +19,20 @@ class WelcomeScreen extends StatelessWidget {
               Container(
                 width: 120,
                 height: 120,
+                padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: AppColors.border),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.3),
+                      color: AppColors.primary.withOpacity(0.25),
                       blurRadius: 30,
                       offset: const Offset(0, 10),
                     ),
                   ],
                 ),
-                child: const Icon(Icons.store_rounded, size: 64, color: Colors.white),
+                child: const AppLogo(size: 84, showText: false),
               ),
               const SizedBox(height: 32),
               Text(

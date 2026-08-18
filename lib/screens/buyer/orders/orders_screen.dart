@@ -4,7 +4,7 @@ import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
 import '../order_tracking/order_tracking_screen.dart';
 
-final List<BuyerOrder> _orders = [
+final List<BuyerOrder> buyerOrders = [
   BuyerOrder(id: 'ord_1', orderNumber: 'MM-2026-001', placedAt: DateTime(2026, 7, 25, 10, 30), status: OrderStatus.delivered, deliveryMethod: 'Standard Delivery', paymentMethod: 'Cash on Delivery', items: [
     BuyerOrderItem(productId: 'prod_2', name: 'Sony PlayStation 5', variant: 'Standard', shopName: 'TechCity', price: 380000, quantity: 1, color: 'White'),
     BuyerOrderItem(productId: 'prod_7', name: 'Samsung Freepods Pro', shopName: 'PhoneHub', price: 25000, quantity: 2),
@@ -31,7 +31,7 @@ class OrdersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_orders.isEmpty) {
+    if (buyerOrders.isEmpty) {
       return Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(backgroundColor: Colors.white, elevation: 0, title: Text('My Orders', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary))),
@@ -61,9 +61,9 @@ class OrdersScreen extends StatelessWidget {
         onRefresh: () async {},
         child: ListView.separated(
           padding: const EdgeInsets.all(16),
-          itemCount: _orders.length,
+          itemCount: buyerOrders.length,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
-          itemBuilder: (_, i) => _OrderCard(order: _orders[i]),
+          itemBuilder: (_, i) => _OrderCard(order: buyerOrders[i]),
         ),
       ),
     );

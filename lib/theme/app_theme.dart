@@ -4,15 +4,15 @@ import 'package:google_fonts/google_fonts.dart';
 class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xFF173B7B);
+  static const Color primary = Color(0xFF173B7D);
   static const Color primaryDark = Color(0xFF0F2A58);
   static const Color primaryLight = Color(0xFF2A5DB8);
   static const Color primaryContainer = Color(0xFFE8EDF5);
 
-  static const Color accent = Color(0xFFF36E09);
+  static const Color accent = Color(0xFFFD6E09);
   static const Color accentLight = Color(0xFFFFF0E0);
 
-  static const Color navy = Color(0xFF044E75);
+  static const Color navy = Color(0xFF044E9F);
 
   static const Color success = Color(0xFF22C55E);
   static const Color successLight = Color(0xFFE8F5E9);
@@ -20,14 +20,14 @@ class AppColors {
   static const Color errorLight = Color(0xFFFFEBEE);
   static const Color warning = Color(0xFFF59E0B);
   static const Color warningLight = Color(0xFFFFF3E0);
-  static const Color info = Color(0xFF173B7B);
+  static const Color info = Color(0xFF173B7D);
   static const Color infoLight = Color(0xFFE3F2FD);
 
   static const Color priorityHigh = Color(0xFFEF4444);
   static const Color priorityHighBg = Color(0xFFFFEBEE);
-  static const Color priorityMedium = Color(0xFFF36E09);
+  static const Color priorityMedium = Color(0xFFFD6E09);
   static const Color priorityMediumBg = Color(0xFFFFF3E0);
-  static const Color priorityLow = Color(0xFF173B7B);
+  static const Color priorityLow = Color(0xFF173B7D);
   static const Color priorityLowBg = Color(0xFFE3F2FD);
 
   static const Color textPrimary = Color(0xFF0F172A);
@@ -43,18 +43,18 @@ class AppColors {
   static const Color border = Color(0xFFE2E8F0);
   static const Color divider = Color(0xFFE2E8F0);
 
-  static const Color chartLine = Color(0xFF173B7B);
+  static const Color chartLine = Color(0xFF173B7D);
   static const Color chartLineAlt = Color(0xFFEF4444);
-  static const Color chartFill = Color(0x33173B7B);
+  static const Color chartFill = Color(0x33173B7D);
   static const Color chartFillAlt = Color(0x33EF4444);
   static const Color chartGrid = Color(0xFFE2E8F0);
 
-  static const Color marketCentral = Color(0xFF173B7B);
-  static const Color marketDowntown = Color(0xFFF36E09);
+  static const Color marketCentral = Color(0xFF173B7D);
+  static const Color marketDowntown = Color(0xFFFD6E09);
   static const Color marketWestside = Color(0xFF22C55E);
   static const Color marketEastside = Color(0xFFF59E0B);
 
-  static const Color notificationAssignment = Color(0xFF173B7B);
+  static const Color notificationAssignment = Color(0xFF173B7D);
   static const Color notificationApproval = Color(0xFF22C55E);
   static const Color notificationRejection = Color(0xFFEF4444);
   static const Color notificationSystem = Color(0xFF6B7280);
@@ -62,7 +62,7 @@ class AppColors {
   static const Color online = Color(0xFF22C55E);
   static const Color offline = Color(0xFF9CA3AF);
 
-  static const Color gaugeFill = Color(0xFF173B7B);
+  static const Color gaugeFill = Color(0xFF173B7D);
   static const Color gaugeTrack = Color(0xFFE2E8F0);
   static const Color gaugeSuccess = Color(0xFF22C55E);
 
@@ -71,30 +71,30 @@ class AppColors {
   static const Color mapPinPending = Color(0xFFF59E0B);
   static const Color mapPinApproved = Color(0xFF22C55E);
   static const Color mapPinRejected = Color(0xFFEF4444);
-  static const Color mapPinMapper = Color(0xFF173B7B);
-  static const Color mapPinPulse = Color(0x33173B7B);
+  static const Color mapPinMapper = Color(0xFF173B7D);
+  static const Color mapPinPulse = Color(0x33173B7D);
 
   static const Color kpiGreen = Color(0xFF22C55E);
-  static const Color kpiBlue = Color(0xFF173B7B);
-  static const Color kpiOrange = Color(0xFFF36E09);
+  static const Color kpiBlue = Color(0xFF173B7D);
+  static const Color kpiOrange = Color(0xFFFD6E09);
   static const Color kpiPurple = Color(0xFF7C3AED);
   static const Color kpiPink = Color(0xFFEC4899);
   static const Color kpiTeal = Color(0xFF14B8A6);
   static const Color kpiRed = Color(0xFFEF4444);
 
   static const Color verifiedBadge = Color(0xFF22C55E);
-  static const Color starActive = Color(0xFFF59E0B);
-  static const Color blue = Color(0xFF173B7B);
+  static const Color starActive = Color(0xFFFD6E09);
+  static const Color blue = Color(0xFF173B7D);
   static const Color purple = Color(0xFF7C3AED);
   static const Color pink = Color(0xFFEC4899);
   static const Color teal = Color(0xFF14B8A6);
-  static const Color orange = Color(0xFFF36E09);
+  static const Color orange = Color(0xFFFD6E09);
   static const Color yellow = Color(0xFFF59E0B);
   static const Color green = Color(0xFF22C55E);
   static const Color red = Color(0xFFEF4444);
 
   static const Color onlineDot = Color(0xFF22C55E);
-  static const Color unreadDot = Color(0xFFF36E09);
+  static const Color unreadDot = Color(0xFFFD6E09);
   static const Color ratingBarInactive = Color(0xFFE2E8F0);
   static const Color ratingBarActive = Color(0xFFF59E0B);
 }
@@ -105,10 +105,12 @@ class AppTheme {
     brightness: Brightness.light,
     colorScheme: ColorScheme.light(
       primary: AppColors.primary,
-      secondary: AppColors.accent,
-      surface: AppColors.background,
+      secondary: AppColors.navy,
+      tertiary: AppColors.accent,
+      surface: AppColors.surface,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
+      onTertiary: Colors.white,
       onSurface: AppColors.textPrimary,
       error: AppColors.error,
     ),
@@ -134,7 +136,7 @@ class AppTheme {
         backgroundColor: AppColors.accent,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: GoogleFonts.sourceSans3(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
@@ -143,28 +145,53 @@ class AppTheme {
         foregroundColor: AppColors.primary,
         side: const BorderSide(color: AppColors.primary),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 2)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.border)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.border)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 2)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     ),
     cardTheme: CardThemeData(
       color: AppColors.cardBackground,
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      shadowColor: AppColors.primary.withOpacity(0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
-      selectedItemColor: AppColors.primary,
+      selectedItemColor: AppColors.accent,
       unselectedItemColor: AppColors.textSecondary,
+      selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
       type: BottomNavigationBarType.fixed,
       elevation: 8,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: Colors.white,
+      indicatorColor: AppColors.primaryContainer,
+      elevation: 8,
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? AppColors.accent
+              : AppColors.textSecondary,
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => GoogleFonts.poppins(
+          fontSize: 11,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w600
+              : FontWeight.w400,
+          color: states.contains(WidgetState.selected)
+              ? AppColors.accent
+              : AppColors.textSecondary,
+        ),
+      ),
     ),
   );
 }

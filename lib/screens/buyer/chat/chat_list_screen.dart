@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
+import 'package:market_mirror_mobile/data/mock_data.dart';
 import 'chat_screen.dart';
+import '../shop_detail/shop_detail_screen.dart';
 
-final List<BuyerConversation> _conversations = [
+final List<BuyerConversation> buyerConversations = [
   BuyerConversation(id: 'conv_1', shopId: 'shop_1', shopName: 'TechCity', category: 'Electronics', lastMessage: 'Yes, we have the PS5 in stock!', time: '2m ago', unread: 2, online: true),
   BuyerConversation(id: 'conv_2', shopId: 'shop_2', shopName: 'PhoneHub', category: 'Phones', lastMessage: 'The iPhone 15 Pro Max comes with 1-year warranty.', time: '1h ago', unread: 0, online: true),
   BuyerConversation(id: 'conv_3', shopId: 'shop_3', shopName: 'GlobalFabrics', category: 'Fabrics', lastMessage: 'Swiss lace available in white, ivory, and champagne.', time: '3h ago', unread: 1, online: false),
@@ -22,11 +24,56 @@ class _ChatListScreenState extends State<ChatListScreen> {
   final TextEditingController _searchCtrl = TextEditingController();
 
   List<BuyerConversation> get _filtered {
-    if (_searchCtrl.text.isEmpty) return _conversations;
-    return _conversations.where((c) => c.shopName.toLowerCase().contains(_searchCtrl.text.toLowerCase())).toList();
+    if (_searchCtrl.text.isEmpty) return buyerConversations;
+    return buyerConversations.where((c) => c.shopName.toLowerCase().contains(_searchCtrl.text.toLowerCase())).toList();
   }
 
-  int get _totalUnread => _conversations.fold(0, (sum, c) => sum + c.unread);
+  int get _totalUnread => buyerConversations.fold(0, (sum, c) => sum + c.unread);
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message, style: GoogleFonts.sourceSans3(fontSize: 13)), backgroundColor: AppColors.primary));
+  }
+
+  Future<void> _handleMenu(BuyerConversation conv, String value) async {
+    switch (value) {
+      case 'open':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(shopName: conv.shopName)));
+        break;
+      case 'view_shop':
+        try {
+          final shop = MockData.shops.firstWhere((s) => s.id == conv.shopId);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ShopDetailScreen(shop: shop)));
+        } catch (_) {
+          _showSnack('Shop profile unavailable');
+        }
+        break;
+      case 'mark_read':
+        setState(() {
+          final idx = buyerConversations.indexWhere((c) => c.id == conv.id);
+          if (idx >= 0) buyerConversations[idx] = BuyerConversation(id: conv.id, shopId: conv.shopId, shopName: conv.shopName, category: conv.category, lastMessage: conv.lastMessage, time: conv.time, unread: 0, online: conv.online);
+        });
+        _showSnack('Marked as read');
+        break;
+      case 'delete':
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text('Delete conversation?', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+            content: Text('Chat with ${conv.shopName} will be removed.', style: GoogleFonts.sourceSans3(fontSize: 13)),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Delete', style: GoogleFonts.sourceSans3(fontWeight: FontWeight.w700, color: AppColors.error))),
+            ],
+          ),
+        );
+        if (confirmed == true) {
+          setState(() => buyerConversations.removeWhere((c) => c.id == conv.id));
+          _showSnack('Conversation deleted');
+        }
+        break;
+    }
+  }
 
   @override
   void dispose() {
@@ -159,6 +206,19 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 ],
                               ),
                             ),
+                            const SizedBox(width: 12),
+                            PopupMenuButton<String>(
+                              icon: const Icon(Icons.more_vert, size: 20, color: AppColors.textHint),
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              onSelected: (value) => _handleMenu(conv, value),
+                              itemBuilder: (_) => const [
+                                PopupMenuItem(value: 'open', child: _MenuRow(icon: Icons.chat_bubble_outline, label: 'Open Chat')),
+                                PopupMenuItem(value: 'view_shop', child: _MenuRow(icon: Icons.storefront_outlined, label: 'View Shop')),
+                                PopupMenuItem(value: 'mark_read', child: _MenuRow(icon: Icons.mark_email_read_outlined, label: 'Mark as Read')),
+                                PopupMenuItem(value: 'delete', child: _MenuRow(icon: Icons.delete_outline, label: 'Delete')),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -168,6 +228,24 @@ class _ChatListScreenState extends State<ChatListScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _MenuRow extends StatelessWidget {
+  const _MenuRow({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.textPrimary),
+        const SizedBox(width: 10),
+        Text(label, style: GoogleFonts.sourceSans3(fontSize: 14, color: AppColors.textPrimary)),
+      ],
     );
   }
 }

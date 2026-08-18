@@ -50,7 +50,7 @@ class _BuyerNavShellState extends State<BuyerNavShell> {
           onTap: (i) => setState(() => _currentIndex = i),
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: AppColors.primary,
+          selectedItemColor: AppColors.accent,
           unselectedItemColor: AppColors.textHint,
           selectedFontSize: 11,
           unselectedFontSize: 11,

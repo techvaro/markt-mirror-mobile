@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
+import 'package:market_mirror_mobile/widgets/app_logo.dart';
 import 'package:market_mirror_mobile/providers/auth_provider.dart';
 import 'package:market_mirror_mobile/models/models.dart';
 import 'package:market_mirror_mobile/screens/buyer/buyer_nav_shell.dart';
@@ -78,20 +79,29 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Consumer<AuthProvider>(
             builder: (context, auth, _) {
               return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.arrow_back, color: AppColors.primary),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.arrow_back, color: AppColors.primary),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Center(
+                    child: AppLogo(size: 72, showText: false),
                   ),
                   const SizedBox(height: 24),
                   Text(
                     _isSignup ? 'Create Account' : 'Welcome Back',
+                    textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _isSignup ? 'Join Market Mirror today' : 'Sign in to continue',
+                    _isSignup ? 'Create your account to get started' : 'Sign in to continue',
+                    textAlign: TextAlign.center,
                     style: GoogleFonts.sourceSans3(fontSize: 16, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 32),

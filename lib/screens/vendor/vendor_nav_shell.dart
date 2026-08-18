@@ -43,13 +43,13 @@ class _VendorNavShellState extends State<VendorNavShell> {
           onTap: (index) => setState(() => _currentIndex = index),
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: AppColors.primary,
+          selectedItemColor: AppColors.accent,
           unselectedItemColor: AppColors.textHint,
-          selectedLabelStyle: GoogleFonts.inter(
+          selectedLabelStyle: GoogleFonts.poppins(
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),
-          unselectedLabelStyle: GoogleFonts.inter(
+          unselectedLabelStyle: GoogleFonts.poppins(
             fontSize: 11,
             fontWeight: FontWeight.w400,
           ),

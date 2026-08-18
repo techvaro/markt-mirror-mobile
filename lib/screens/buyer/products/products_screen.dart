@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
+import 'package:market_mirror_mobile/data/mock_data.dart';
 import 'package:market_mirror_mobile/providers/market_provider.dart';
+import 'package:market_mirror_mobile/widgets/chat_icon_button.dart';
+import 'package:market_mirror_mobile/widgets/city_market_selector.dart';
+import 'package:market_mirror_mobile/widgets/product_card.dart';
 import 'package:provider/provider.dart';
-import '../product_detail/product_detail_screen.dart';
 
 final List<String> _allCategories = ['All', 'Electronics', 'Phones', 'Fabrics', 'Appliances', 'Auto', 'Beauty', 'Groceries'];
 
@@ -86,9 +89,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text('Products', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary)),
+        actions: const [ChatIconButton()],
       ),
       body: Column(
         children: [
+          const CityMarketSelector(),
           Container(
             color: Colors.white,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -201,7 +206,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   padding: const EdgeInsets.all(16),
                   itemCount: filtered.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.72, crossAxisSpacing: 12, mainAxisSpacing: 12),
-                  itemBuilder: (_, i) => _ProductCard(product: filtered[i]),
+                  itemBuilder: (_, i) => ProductCard(product: filtered[i]),
                 ),
           ),
         ],
@@ -211,101 +216,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Set<String> _marketShopIds(String market) {
     if (market.isEmpty) return const {};
-    const shopMarkets = {
-      'shop_1': 'Computer Village',
-      'shop_2': 'Computer Village',
-      'shop_3': 'Trade Fair Complex',
-      'shop_4': 'Alaba International Market',
-      'shop_5': 'Alaba International Market',
-      'shop_6': 'Trade Fair Complex',
-    };
-    return shopMarkets.entries
-        .where((entry) => entry.value == market)
-        .map((entry) => entry.key)
+    return MockData.shops
+        .where((shop) => shop.market == market)
+        .map((shop) => shop.id)
         .toSet();
-  }
-}
-
-class _ProductCard extends StatelessWidget {
-  final ProductWithShop product;
-  const _ProductCard({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product))),
-      child: Container(
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(color: _categoryColor(product.category).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(_categoryIcon(product.category), size: 32, color: _categoryColor(product.category)),
-                    const SizedBox(height: 4),
-                    Text(product.category, style: GoogleFonts.sourceSans3(fontSize: 10, color: _categoryColor(product.category))),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(product.name, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary), maxLines: 2, overflow: TextOverflow.ellipsis),
-            const SizedBox(height: 2),
-            Text(product.shopName, style: GoogleFonts.sourceSans3(fontSize: 10, color: AppColors.textSecondary)),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Text('₦${_formatPrice(product.price)}', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.accent)),
-                const Spacer(),
-                if (!product.inStock)
-                  Text('Out of Stock', style: GoogleFonts.sourceSans3(fontSize: 9, color: AppColors.error))
-                else
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(6)),
-                    child: const Icon(Icons.add, size: 14, color: Colors.white),
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Color _categoryColor(String cat) {
-    switch (cat) {
-      case 'Electronics': return AppColors.blue;
-      case 'Phones': return AppColors.purple;
-      case 'Fabrics': return AppColors.pink;
-      case 'Appliances': return AppColors.teal;
-      case 'Auto': return AppColors.orange;
-      case 'Beauty': return AppColors.accent;
-      default: return AppColors.primary;
-    }
-  }
-
-  IconData _categoryIcon(String cat) {
-    switch (cat) {
-      case 'Electronics': return Icons.tv;
-      case 'Phones': return Icons.phone_android;
-      case 'Fabrics': return Icons.style;
-      case 'Appliances': return Icons.kitchen;
-      case 'Auto': return Icons.directions_car;
-      case 'Beauty': return Icons.spa;
-      default: return Icons.shopping_bag;
-    }
-  }
-
-  String _formatPrice(double p) {
-    if (p >= 1000000) return '${(p / 1000000).toStringAsFixed(1)}M';
-    if (p >= 1000) return '${(p / 1000).toStringAsFixed(0)}K';
-    return p.toStringAsFixed(0);
   }
 }

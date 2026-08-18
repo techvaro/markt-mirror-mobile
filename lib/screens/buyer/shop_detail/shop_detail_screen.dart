@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
+import 'package:market_mirror_mobile/widgets/product_card.dart';
 import '../chat/chat_screen.dart';
 import '../call/call_screen.dart';
 
@@ -51,7 +52,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> with SingleTickerPr
       body: NestedScrollView(
         headerSliverBuilder: (_, __) => [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 240,
             pinned: true,
             backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
@@ -67,7 +68,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> with SingleTickerPr
                   children: [
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 64),
                       child: Row(
                         children: [
                           Container(
@@ -82,7 +83,9 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> with SingleTickerPr
                               children: [
                                 Row(
                                   children: [
-                                    Text(s.name, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+                                    Flexible(
+                                      child: Text(s.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+                                    ),
                                     if (s.verified) ...[const SizedBox(width: 6), const Icon(Icons.verified, size: 18, color: AppColors.verifiedBadge)],
                                   ],
                                 ),
@@ -97,7 +100,9 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> with SingleTickerPr
                                     const SizedBox(width: 8),
                                     Icon(Icons.location_on, size: 12, color: Colors.white70),
                                     const SizedBox(width: 2),
-                                    Text(s.location, style: GoogleFonts.sourceSans3(fontSize: 10, color: Colors.white70)),
+                                    Flexible(
+                                      child: Text(s.location, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.sourceSans3(fontSize: 10, color: Colors.white70)),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -180,39 +185,7 @@ class _ProductsTab extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       itemCount: _shopProducts.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.75, crossAxisSpacing: 12, mainAxisSpacing: 12),
-      itemBuilder: (_, i) {
-        final p = _shopProducts[i];
-        return Container(
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
-                  child: Icon(Icons.shopping_bag, color: AppColors.primary, size: 28),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(p.name, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis),
-              const SizedBox(height: 2),
-              Row(
-                children: [
-                  Text('₦${p.price.toStringAsFixed(0)}', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.accent)),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(6)),
-                    child: const Icon(Icons.add, size: 14, color: Colors.white),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
+      itemBuilder: (_, i) => ProductCard(product: _shopProducts[i]),
     );
   }
 }

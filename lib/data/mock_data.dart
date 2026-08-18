@@ -5,52 +5,27 @@ class MockData {
   // CITIES
   // =========================================================================
   static final List<String> cities = [
-    'Lagos', 'Abuja', 'Port Harcourt', 'Ibadan', 'Kano', 'Enugu',
-    'Benin City', 'Onitsha', 'Abeokuta', 'Jos', 'Warri', 'Kaduna',
-    'Calabar', 'Owerri', 'Akure', 'Bauchi', 'Maiduguri', 'Zaria',
+    'Lagos',
   ];
 
+  static const Map<String, String> _cityStateMap = {
+    'Lagos': 'Lagos',
+  };
+
+  static List<String> marketsForCity(String city) {
+    final stateName = _cityStateMap[city];
+    if (stateName == null) return const [];
+    for (final state in nigerianStates) {
+      if (state.name == stateName) return state.markets;
+    }
+    return const [];
+  }
+
   // =========================================================================
-  // NIGERIAN STATES & MARKETS
+  // NIGERIAN STATES & MARKETS (Lagos only — Computer Village first)
   // =========================================================================
   static final List<NigerianState> nigerianStates = [
-    NigerianState(name: 'Abia', markets: ['Ariaria International Market', 'Isigate Market', 'Ekeoha Market']),
-    NigerianState(name: 'Adamawa', markets: ['Jimeta Main Market', 'Yola Market', 'Mubi Market']),
-    NigerianState(name: 'Akwa Ibom', markets: ['Uyo Main Market', 'Ikot Ekpene Market', 'Eket Market']),
-    NigerianState(name: 'Anambra', markets: ['Onitsha Main Market', 'Nkpor Market', 'Bridge Head Market']),
-    NigerianState(name: 'Bauchi', markets: ['Bauchi Main Market', 'Wunti Market', 'Muda Lawal Market']),
-    NigerianState(name: 'Bayelsa', markets: ['Yenagoa Main Market', 'Swali Market', 'Opolo Market']),
-    NigerianState(name: 'Benue', markets: ['Wurukum Market', 'High Level Market', 'Modern Market']),
-    NigerianState(name: 'Borno', markets: ['Monday Market', 'Gamboru Market', 'Bulumkutu Market']),
-    NigerianState(name: 'Cross River', markets: ['Watt Market', 'Bayside Market', 'Marian Market']),
-    NigerianState(name: 'Delta', markets: ['Ogbeogonogo Market', 'Igbudu Market', 'Oshimili Market']),
-    NigerianState(name: 'Ebonyi', markets: ['Abakaliki Main Market', 'Kpirikpiri Market', 'New Market']),
-    NigerianState(name: 'Edo', markets: ['Oba Market', 'New Benin Market', 'Uselu Market']),
-    NigerianState(name: 'Ekiti', markets: ['Oja Oba Market', 'Ado Main Market', 'Ijero Market']),
-    NigerianState(name: 'Enugu', markets: ['Ogbete Main Market', 'New Market', 'Artisan Market']),
-    NigerianState(name: 'FCT', markets: ['Wuse Market', 'Garki Market', 'Kuje Market', 'Dei-Dei Market']),
-    NigerianState(name: 'Gombe', markets: ['Gombe Main Market', 'Pantami Market', 'Malam Inna Market']),
-    NigerianState(name: 'Imo', markets: ['Ekeonuwa Market', 'Relief Market', 'Orie Market']),
-    NigerianState(name: 'Jigawa', markets: ['Dutse Market', 'Hadejia Market', 'Ringim Market']),
-    NigerianState(name: 'Kaduna', markets: ['Kaduna Central Market', 'Kasuan Magani', 'Sabon Gari Market']),
-    NigerianState(name: 'Kano', markets: ['Kurmi Market', 'Sabon Gari Market', 'Dawanau Market', 'Singa Market']),
-    NigerianState(name: 'Katsina', markets: ['Katsina Main Market', 'Kofa Market', 'Yantukunya Market']),
-    NigerianState(name: 'Kebbi', markets: ['Birnin Kebbi Market', 'Argungu Market', 'Zuru Market']),
-    NigerianState(name: 'Kogi', markets: ['Lokoja Main Market', 'Anyigba Market', 'Okene Market']),
-    NigerianState(name: 'Kwara', markets: ['Ilorin Main Market', 'Oja Oba Market', 'Mandate Market']),
-    NigerianState(name: 'Lagos', markets: ['Computer Village', 'Alaba International Market', 'Trade Fair Complex', 'Balogun Market', 'Mile 12 Market']),
-    NigerianState(name: 'Nasarawa', markets: ['Lafia Main Market', 'Mararaba Market', 'Karu Market']),
-    NigerianState(name: 'Niger', markets: ['Minna Main Market', 'Bida Market', 'Kontagora Market']),
-    NigerianState(name: 'Ogun', markets: ['Itoku Market', 'Kuto Market', 'Oke-Ilewo Market']),
-    NigerianState(name: 'Ondo', markets: ['Akure Main Market', 'Oja Oba Market', 'Isinkan Market']),
-    NigerianState(name: 'Osun', markets: ['Oja Oba Market', 'Dele Yes Sir Market', 'Igbona Market']),
-    NigerianState(name: 'Oyo', markets: ['Bodija Market', 'Oja Oba Market', 'Sango Market', 'Gbagi Market']),
-    NigerianState(name: 'Plateau', markets: ['Jos Main Market', 'Terminus Market', 'Katako Market']),
-    NigerianState(name: 'Rivers', markets: ['Mile 1 Market', 'Oil Mill Market', 'Creek Road Market']),
-    NigerianState(name: 'Sokoto', markets: ['Sokoto Main Market', 'Old Market', 'Tudun Wada Market']),
-    NigerianState(name: 'Taraba', markets: ['Jalingo Main Market', 'Wukari Market', 'Mutum Biyu Market']),
-    NigerianState(name: 'Yobe', markets: ['Damaturu Market', 'Potiskum Market', 'Ngetra Market']),
-    NigerianState(name: 'Zamfara', markets: ['Gusau Market', 'Talata Mafara Market', 'Kaura Market']),
+    NigerianState(name: 'Lagos', markets: ['Computer Village', 'Alaba International Market (Coming Soon)']),
   ];
 
   // =========================================================================
@@ -58,25 +33,19 @@ class MockData {
   // =========================================================================
   static final List<Map<String, dynamic>> markets = [
     {
-      'name': 'Alaba International Market',
-      'location': 'Ojo, Lagos',
-      'description': 'One of West Africa\'s largest electronics markets, specializing in home appliances, auto parts, and consumer electronics.',
-      'rating': 4.3,
-      'shopCount': 2,
-    },
-    {
       'name': 'Computer Village',
       'location': 'Ikeja, Lagos',
       'description': 'Nigeria\'s premier ICT market, known for cutting-edge gadgets, phones, computers, and accessories.',
       'rating': 4.6,
-      'shopCount': 2,
+      'shopCount': 6,
     },
     {
-      'name': 'Trade Fair Complex',
-      'location': 'Badagry, Lagos',
-      'description': 'A massive wholesale market complex featuring fabrics, beauty products, and general merchandise.',
-      'rating': 4.1,
-      'shopCount': 2,
+      'name': 'Alaba International Market',
+      'location': 'Ojo, Lagos',
+      'description': 'One of West Africa\'s largest electronics markets — coming soon to Market Mirror.',
+      'rating': 4.3,
+      'shopCount': 0,
+      'comingSoon': true,
     },
   ];
 
@@ -89,9 +58,10 @@ class MockData {
       name: 'TechCity',
       category: 'Electronics',
       description: 'Premium electronics dealer offering the latest TVs, gaming consoles, speakers, and air conditioners at competitive prices. Authorized dealer for major brands.',
-      location: 'Shop A12, Computer Village, Ikeja',
+      location: 'Shop A12, Otigba Plaza, Computer Village, Ikeja',
       city: 'Lagos',
       market: 'Computer Village',
+      building: 'Otigba Plaza',
       phone: '+234 802 345 6789',
       hours: 'Mon-Sat: 8AM-7PM, Sun: 10AM-4PM',
       shopNumber: 'A12',
@@ -111,9 +81,10 @@ class MockData {
       name: 'PhoneHub',
       category: 'Phones',
       description: 'Your trusted source for flagship smartphones, accessories, and audio gear. We stock the latest releases from Apple, Samsung, and more.',
-      location: 'Shop B5, Computer Village, Ikeja',
+      location: 'Shop B5, Otigba Plaza, Computer Village, Ikeja',
       city: 'Lagos',
       market: 'Computer Village',
+      building: 'Otigba Plaza',
       phone: '+234 803 456 7890',
       hours: 'Mon-Sat: 8:30AM-7PM, Sun: 11AM-4PM',
       shopNumber: 'B5',
@@ -132,9 +103,10 @@ class MockData {
       name: 'GlobalFabrics',
       category: 'Fabrics',
       description: 'Exquisite African fabrics and lace materials sourced directly from top manufacturers. We offer Swiss lace, Vlisco Ankara, Senator materials, and Aso-Oke.',
-      location: 'Shop C8, Trade Fair Complex, Badagry',
+      location: 'Shop C8, Memory Lane Plaza, Computer Village, Ikeja',
       city: 'Lagos',
-      market: 'Trade Fair Complex',
+      market: 'Computer Village',
+      building: 'Memory Lane Plaza',
       phone: '+234 805 678 9012',
       hours: 'Mon-Sat: 8AM-6PM',
       shopNumber: 'C8',
@@ -153,9 +125,10 @@ class MockData {
       name: 'Kemis Home Appliances',
       category: 'Appliances',
       description: 'Quality home and kitchen appliances from trusted brands. We deliver freezers, fans, food processors, cookers, and more across Nigeria.',
-      location: 'Shop D15, Alaba International Market, Ojo',
+      location: 'Shop D15, Cooperative Building, Computer Village, Ikeja',
       city: 'Lagos',
-      market: 'Alaba International Market',
+      market: 'Computer Village',
+      building: 'Cooperative Building',
       phone: '+234 806 789 0123',
       hours: 'Mon-Sat: 7AM-6:30PM, Sun: 12PM-4PM',
       shopNumber: 'D15',
@@ -174,9 +147,10 @@ class MockData {
       name: 'AutoParts Pro',
       category: 'Auto',
       description: 'Reliable auto parts and accessories for all vehicle makes. From shock absorbers to tyres, spark plugs to brake pads — we keep you moving.',
-      location: 'Shop E7, Alaba International Market, Ojo',
+      location: 'Shop E7, Computer Plaza, Computer Village, Ikeja',
       city: 'Lagos',
-      market: 'Alaba International Market',
+      market: 'Computer Village',
+      building: 'Computer Plaza',
       phone: '+234 807 890 1234',
       hours: 'Mon-Sat: 7:30AM-6PM, Sun: 10AM-3PM',
       shopNumber: 'E7',
@@ -195,9 +169,10 @@ class MockData {
       name: 'BeautyGlow Studio',
       category: 'Beauty',
       description: 'Premium beauty and skincare products. We curate the best foundations, facial mists, lipsticks, and cleansers from top beauty brands.',
-      location: 'Shop F3, Trade Fair Complex, Badagry',
+      location: 'Shop F3, Data Centre Building, Computer Village, Ikeja',
       city: 'Lagos',
-      market: 'Trade Fair Complex',
+      market: 'Computer Village',
+      building: 'Data Centre Building',
       phone: '+234 808 901 2345',
       hours: 'Mon-Sat: 9AM-7PM, Sun: 12PM-5PM',
       shopNumber: 'F3',
@@ -1130,5 +1105,18 @@ class MockData {
 
   static List<Shop> getShopsByMarket(String market) {
     return shops.where((s) => s.market == market).toList();
+  }
+
+  /// Distinct building names within a market (e.g. for the "Browse Shops"
+  /// building filter). Returns an empty list for unknown/empty markets.
+  static List<String> buildingsForMarket(String market) {
+    if (market.isEmpty) {
+      return shops.map((s) => s.building).where((b) => b.isNotEmpty).toSet().toList();
+    }
+    return shops
+        .where((s) => s.market == market && s.building.isNotEmpty)
+        .map((s) => s.building)
+        .toSet()
+        .toList();
   }
 }

@@ -36,27 +36,27 @@ class MapperNavShell extends StatelessWidget {
             destinations: const [
               NavigationDestination(
                 icon: Icon(Icons.dashboard_outlined),
-                selectedIcon: Icon(Icons.dashboard, color: AppColors.primary),
+                selectedIcon: Icon(Icons.dashboard, color: AppColors.accent),
                 label: 'Dashboard',
               ),
               NavigationDestination(
                 icon: Icon(Icons.assignment_outlined),
-                selectedIcon: Icon(Icons.assignment, color: AppColors.primary),
+                selectedIcon: Icon(Icons.assignment, color: AppColors.accent),
                 label: 'Tasks',
               ),
               NavigationDestination(
                 icon: Icon(Icons.app_registration_outlined),
-                selectedIcon: Icon(Icons.app_registration, color: AppColors.primary),
+                selectedIcon: Icon(Icons.app_registration, color: AppColors.accent),
                 label: 'Register',
               ),
               NavigationDestination(
                 icon: Icon(Icons.chat_bubble_outlined),
-                selectedIcon: Icon(Icons.chat_bubble, color: AppColors.primary),
+                selectedIcon: Icon(Icons.chat_bubble, color: AppColors.accent),
                 label: 'Messages',
               ),
               NavigationDestination(
                 icon: Icon(Icons.settings_outlined),
-                selectedIcon: Icon(Icons.settings, color: AppColors.primary),
+                selectedIcon: Icon(Icons.settings, color: AppColors.accent),
                 label: 'Settings',
               ),
             ],

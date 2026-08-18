@@ -50,14 +50,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           children: [
             Container(
               height: 220, width: double.infinity,
-              decoration: BoxDecoration(color: _categoryColor(p.category).withOpacity(0.08)),
+              decoration: BoxDecoration(color: _grey.withOpacity(0.08)),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(_categoryIcon(p.category), size: 64, color: _categoryColor(p.category)),
+                    Icon(_categoryIcon(p.category), size: 64, color: _grey),
                     const SizedBox(height: 12),
-                    Text(p.category, style: GoogleFonts.poppins(fontSize: 14, color: _categoryColor(p.category), fontWeight: FontWeight.w600)),
+                    Text(p.category, style: GoogleFonts.poppins(fontSize: 14, color: _grey, fontWeight: FontWeight.w600)),
                   ],
                 ),
               ),
@@ -82,8 +82,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
-                        child: Text(p.category, style: GoogleFonts.sourceSans3(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary)),
+                        decoration: BoxDecoration(color: _grey.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
+                        child: Text(p.category, style: GoogleFonts.sourceSans3(fontSize: 11, fontWeight: FontWeight.w600, color: _grey)),
                       ),
                     ],
                   ),
@@ -101,9 +101,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             decoration: BoxDecoration(
-                              color: isSelected ? AppColors.primary : Colors.white,
+                              color: isSelected ? _grey : Colors.white,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: isSelected ? AppColors.primary : AppColors.border),
+                              border: Border.all(color: isSelected ? _grey : AppColors.border),
                             ),
                             child: Text(v.value, style: GoogleFonts.sourceSans3(fontSize: 12, fontWeight: FontWeight.w600, color: isSelected ? Colors.white : AppColors.textPrimary)),
                           ),
@@ -120,7 +120,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.star, size: 18, color: AppColors.starActive),
+                          const Icon(Icons.star, size: 18, color: AppColors.textHint),
                           const SizedBox(width: 4),
                           Text(p.rating.toString(), style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                           const SizedBox(width: 4),
@@ -164,8 +164,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       children: [
                         Container(
                           width: 44, height: 44,
-                          decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                          child: const Icon(Icons.store, color: AppColors.primary, size: 22),
+                          decoration: BoxDecoration(color: _grey.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                          child: const Icon(Icons.store, color: AppColors.textSecondary, size: 22),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -176,7 +176,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 children: [
                                   Text(p.shopName, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                                   const SizedBox(width: 6),
-                                  const Icon(Icons.verified, size: 16, color: AppColors.verifiedBadge),
+                                  const Icon(Icons.verified, size: 16, color: AppColors.textHint),
                                 ],
                               ),
                               const SizedBox(height: 2),
@@ -200,9 +200,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       width: double.infinity, height: 50,
                       child: ElevatedButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Added to cart!', style: GoogleFonts.sourceSans3(fontSize: 14)), backgroundColor: AppColors.success));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Added to cart!', style: GoogleFonts.sourceSans3(fontSize: 14)), backgroundColor: _grey));
                         },
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
+                        style: ElevatedButton.styleFrom(backgroundColor: _grey, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
                         child: Text('Add to Cart', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white)),
                       ),
                     ),
@@ -226,8 +226,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             children: [
                               Container(
                                 height: 60, width: double.infinity,
-                                decoration: BoxDecoration(color: _categoryColor(r.category).withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                                child: Icon(_categoryIcon(r.category), color: _categoryColor(r.category), size: 24),
+                                decoration: BoxDecoration(color: _grey.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                                child: Icon(_categoryIcon(r.category), color: _grey, size: 24),
                               ),
                               const SizedBox(height: 6),
                               Text(r.name, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textPrimary), maxLines: 2, overflow: TextOverflow.ellipsis),
@@ -248,17 +248,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Color _categoryColor(String cat) {
-    switch (cat) {
-      case 'Electronics': return AppColors.blue;
-      case 'Phones': return AppColors.purple;
-      case 'Fabrics': return AppColors.pink;
-      case 'Appliances': return AppColors.teal;
-      case 'Auto': return AppColors.orange;
-      case 'Beauty': return AppColors.accent;
-      default: return AppColors.primary;
-    }
-  }
+  static const Color _grey = Color(0xFF64748B);
 
   IconData _categoryIcon(String cat) {
     switch (cat) {

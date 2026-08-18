@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
+import 'package:market_mirror_mobile/models/models.dart';
+import 'package:market_mirror_mobile/data/mock_data.dart';
 import '../call/call_screen.dart';
+import '../shop_detail/shop_detail_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   final String shopName;
@@ -41,6 +44,87 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  Shop? get _shop {
+    try {
+      return MockData.shops.firstWhere((s) => s.name == widget.shopName);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message, style: GoogleFonts.sourceSans3(fontSize: 13)), backgroundColor: AppColors.primary));
+  }
+
+  Future<void> _handleMenuAction(String value) async {
+    switch (value) {
+      case 'view_shop':
+        final shop = _shop;
+        if (shop != null) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ShopDetailScreen(shop: shop)));
+        } else {
+          _showSnack('Shop profile unavailable');
+        }
+        break;
+      case 'call':
+        Navigator.push(context, MaterialPageRoute(builder: (_) => CallScreen(contactName: widget.shopName)));
+        break;
+      case 'favorite':
+        _showSnack('${widget.shopName} added to favorites');
+        break;
+      case 'clear':
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text('Clear chat?', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+            content: Text('This will delete all messages with ${widget.shopName}.', style: GoogleFonts.sourceSans3(fontSize: 13)),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Clear', style: GoogleFonts.sourceSans3(fontWeight: FontWeight.w700, color: AppColors.error))),
+            ],
+          ),
+        );
+        if (confirmed == true) {
+          _showSnack('Chat cleared');
+        }
+        break;
+      case 'block':
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text('Block seller?', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+            content: Text('You will no longer receive messages from ${widget.shopName}.', style: GoogleFonts.sourceSans3(fontSize: 13)),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('Block', style: GoogleFonts.sourceSans3(fontWeight: FontWeight.w700, color: AppColors.error))),
+            ],
+          ),
+        );
+        if (confirmed == true) {
+          _showSnack('${widget.shopName} blocked');
+        }
+        break;
+      case 'report':
+        final reason = await showDialog<String>(
+          context: context,
+          builder: (ctx) => SimpleDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text('Report seller', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+            children: ['Fraud / Scam', 'Harassment', 'Misleading products', 'Offensive content'].map((r) => SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, r),
+              child: Text(r, style: GoogleFonts.sourceSans3(fontSize: 14)),
+            )).toList(),
+          ),
+        );
+        if (reason != null) {
+          _showSnack('Report submitted: $reason');
+        }
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +159,20 @@ class _ChatScreenState extends State<ChatScreen> {
             icon: const Icon(Icons.videocam, color: AppColors.primary),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CallScreen(contactName: widget.shopName, isVideoCall: true))),
           ),
-          IconButton(icon: const Icon(Icons.more_vert, color: AppColors.textPrimary), onPressed: () {}),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: AppColors.textPrimary),
+            color: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            onSelected: (value) => _handleMenuAction(value),
+            itemBuilder: (_) => const [
+              PopupMenuItem(value: 'view_shop', child: _MenuRow(icon: Icons.storefront_outlined, label: 'View Shop')),
+              PopupMenuItem(value: 'call', child: _MenuRow(icon: Icons.phone_outlined, label: 'Call Shop')),
+              PopupMenuItem(value: 'favorite', child: _MenuRow(icon: Icons.favorite_border, label: 'Add to Favorites')),
+              PopupMenuItem(value: 'clear', child: _MenuRow(icon: Icons.delete_outline, label: 'Clear Chat')),
+              PopupMenuItem(value: 'block', child: _MenuRow(icon: Icons.block, label: 'Block Seller')),
+              PopupMenuItem(value: 'report', child: _MenuRow(icon: Icons.flag_outlined, label: 'Report Seller')),
+            ],
+          ),
         ],
       ),
       body: Column(
@@ -190,6 +287,24 @@ class _MessageBubble extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _MenuRow extends StatelessWidget {
+  const _MenuRow({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.textPrimary),
+        const SizedBox(width: 10),
+        Text(label, style: GoogleFonts.sourceSans3(fontSize: 14, color: AppColors.textPrimary)),
+      ],
     );
   }
 }

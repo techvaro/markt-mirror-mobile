@@ -776,6 +776,7 @@ class Shop {
   final String location;
   final String city;
   final String market;
+  final String building;
   final String phone;
   final String hours;
   final String shopNumber;
@@ -794,6 +795,7 @@ class Shop {
     this.location = '',
     this.city = '',
     this.market = '',
+    this.building = '',
     this.phone = '',
     this.hours = '',
     this.shopNumber = '',
@@ -905,6 +907,8 @@ class BuyerOrder {
   final Address address;
   final DateTime? estimatedDelivery;
   final String? cancellationReason;
+  final String riderName;
+  final String riderPhone;
 
   BuyerOrder({
     required this.id,
@@ -920,6 +924,8 @@ class BuyerOrder {
     required this.address,
     this.estimatedDelivery,
     this.cancellationReason,
+    this.riderName = 'Emeka Okafor',
+    this.riderPhone = '+234 803 456 7890',
   });
 
   int get itemCount => items.fold(0, (sum, item) => sum + item.quantity);

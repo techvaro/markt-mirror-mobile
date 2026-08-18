@@ -4,13 +4,16 @@ import 'package:market_mirror_mobile/theme/app_theme.dart';
 import 'package:market_mirror_mobile/models/models.dart';
 import 'package:market_mirror_mobile/data/mock_data.dart';
 import 'package:market_mirror_mobile/providers/market_provider.dart';
+import 'package:market_mirror_mobile/widgets/app_logo.dart';
+import 'package:market_mirror_mobile/widgets/chat_icon_button.dart';
+import 'package:market_mirror_mobile/widgets/city_market_selector.dart';
+import 'package:market_mirror_mobile/widgets/product_card.dart';
 import 'package:provider/provider.dart';
+import '../maps/maps_screen.dart';
 import '../search/search_screen.dart';
 import '../shop_detail/shop_detail_screen.dart';
-import '../product_detail/product_detail_screen.dart';
 import '../notifications/notifications_screen.dart';
 import '../profile/profile_screen.dart';
-import '../vendor_pages/vendor_pages_screen.dart';
 
 final List<Map<String, String>> _categories = [
   {'name': 'Electronics', 'icon': '💻'},
@@ -53,8 +56,10 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text('Market Mirror', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 20, color: AppColors.primary)),
+        centerTitle: true,
+        title: const AppLogo(size: 30),
         actions: [
+          const ChatIconButton(),
           IconButton(
             icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
@@ -67,62 +72,85 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _WelcomeBanner(),
-            const _MarketSelector(),
-            _SearchBar(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen()))),
-            _SectionHeader(title: 'Markets & Communication'),
-            _MarketAndMessagingCard(),
-            _SectionHeader(title: 'Categories'),
-            _CategoriesRow(),
-            _SectionHeader(title: 'Featured Shops'),
-            _FeaturedShops(shops: featuredShops),
-            _SectionHeader(title: 'For Owners & Vendors'),
-            _VendorOnboardingCard(),
-            _SectionHeader(title: 'Trending Products'),
-            _TrendingProducts(products: trendingProducts),
-            _NewsletterSection(),
-            _TrustBanner(),
-            const SizedBox(height: 24),
-          ],
-        ),
+      body: Column(
+        children: [
+          const CityMarketSelector(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _MapCard(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MapsScreen()))),
+                  _WelcomeBanner(),
+                  _SearchBar(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen()))),
+                  _SectionHeader(title: 'Categories'),
+                  _CategoriesRow(),
+                  _SectionHeader(title: 'Products for Sale'),
+                  _TrendingProducts(products: trendingProducts),
+                  _SectionHeader(title: 'Featured Shops'),
+                  _FeaturedShops(shops: featuredShops),
+                  _TrustBanner(),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _MarketSelector extends StatelessWidget {
-  const _MarketSelector();
+class _MapCard extends StatelessWidget {
+  final VoidCallback? onTap;
+  const _MapCard({this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<MarketProvider>();
-    final markets = MockData.markets
-        .map((market) => market['name'] as String)
-        .toList();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: DropdownButtonFormField<String>(
-        value: provider.selectedMarket.isEmpty ? null : provider.selectedMarket,
-        isExpanded: true,
-        decoration: InputDecoration(
-          labelText: 'Shopping market',
-          prefixIcon: const Icon(Icons.location_on_outlined),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
-          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.border)),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppColors.primary, AppColors.navy],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(color: AppColors.primary.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 6)),
+          ],
         ),
-        hint: const Text('All markets'),
-        items: [
-          const DropdownMenuItem<String>(value: '', child: Text('All markets')),
-          ...markets.map((market) => DropdownMenuItem(value: market, child: Text(market))),
-        ],
-        onChanged: provider.selectMarket,
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(14)),
+              child: const Icon(Icons.map_rounded, color: Colors.white, size: 26),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Explore the Market Map', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white)),
+                  const SizedBox(height: 2),
+                  Text('Find your way to any shop inside the market.', style: GoogleFonts.sourceSans3(fontSize: 12, color: Colors.white.withOpacity(0.85))),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+              child: const Icon(Icons.arrow_forward, color: AppColors.primary, size: 20),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -202,43 +230,6 @@ class _SectionHeader extends StatelessWidget {
         children: [
           Text(title, style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
           Text('See All', style: GoogleFonts.sourceSans3(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w600)),
-        ],
-      ),
-    );
-  }
-}
-
-class _MarketAndMessagingCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final selectedMarket = context.watch<MarketProvider>().selectedMarket;
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.location_on_outlined, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(selectedMarket.isEmpty ? 'All markets selected' : selectedMarket, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-                const SizedBox(height: 2),
-                Text('Switch markets and message shops directly from the same experience as the website.', style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary)),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen())),
-            child: const Text('Open'),
-          ),
         ],
       ),
     );
@@ -336,42 +327,6 @@ class _FeaturedShops extends StatelessWidget {
   }
 }
 
-class _VendorOnboardingCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.storefront, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Open a shop or grow your storefront', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-                const SizedBox(height: 4),
-                Text('Manage onboarding, policies, and growth from one place, just like the web portal.', style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary)),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VendorPagesScreen())),
-            child: Text('Open', style: GoogleFonts.sourceSans3(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _TrendingProducts extends StatelessWidget {
   final List<ProductWithShop> products;
   const _TrendingProducts({required this.products});
@@ -379,107 +334,13 @@ class _TrendingProducts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 190,
+      height: 200,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: products.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (_, i) {
-          final p = products[i];
-          return GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: p))),
-            child: Container(
-              width: 150,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 70, width: double.infinity,
-                    decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
-                    child: Center(child: Icon(Icons.shopping_bag, color: AppColors.primary, size: 28)),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(p.name, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary), maxLines: 2, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 2),
-                  Text(p.shopName, style: GoogleFonts.sourceSans3(fontSize: 10, color: AppColors.textSecondary)),
-                  const Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('₦${_formatPrice(p.price)}', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.accent)),
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(6)),
-                        child: const Icon(Icons.add, size: 14, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  String _formatPrice(double p) {
-    if (p >= 1000000) return '${(p / 1000000).toStringAsFixed(1)}M';
-    if (p >= 1000) return '${(p / 1000).toStringAsFixed(0)}K';
-    return p.toStringAsFixed(0);
-  }
-}
-
-class _NewsletterSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [AppColors.accent, Color(0xFF00B894)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Stay Updated!', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
-                const SizedBox(height: 4),
-                Text('Get deals and new products directly in your inbox.', style: GoogleFonts.sourceSans3(fontSize: 12, color: Colors.white.withOpacity(0.85))),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          style: GoogleFonts.sourceSans3(fontSize: 13),
-                          decoration: InputDecoration(
-                            hintText: 'Enter your email',
-                            hintStyle: GoogleFonts.sourceSans3(fontSize: 13, color: AppColors.textHint),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('Subscribe', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.accent)),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        itemBuilder: (_, i) => ProductCard(product: products[i], width: 160),
       ),
     );
   }

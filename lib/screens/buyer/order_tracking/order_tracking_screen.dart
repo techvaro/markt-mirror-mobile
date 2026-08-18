@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
@@ -111,7 +112,7 @@ class OrderTrackingScreen extends StatelessWidget {
                 child: SizedBox(
                   width: double.infinity, height: 50,
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RiderTrackingScreen(order: order))),
                     icon: const Icon(Icons.map, size: 20),
                     label: Text('Track Rider Live', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600)),
                     style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
@@ -233,4 +234,294 @@ class _TrackingTimeline extends StatelessWidget {
           ),
     );
   }
+}
+
+class RiderTrackingScreen extends StatefulWidget {
+  final BuyerOrder order;
+  const RiderTrackingScreen({super.key, required this.order});
+
+  @override
+  State<RiderTrackingScreen> createState() => _RiderTrackingScreenState();
+}
+
+class _RiderTrackingScreenState extends State<RiderTrackingScreen> {
+  late double _progress = 0.12;
+  Timer? _timer;
+  int _ticks = 0;
+
+  static const _riderNames = ['Emeka Okafor', 'Tunde Bakare', 'Chinedu Nwosu', 'Bello Adewale'];
+
+  String get _riderName {
+    final seed = widget.order.orderNumber.codeUnits.fold<int>(0, (sum, c) => sum + c);
+    return _riderNames[seed % _riderNames.length];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted) return;
+      setState(() {
+        _ticks++;
+        _progress = (0.12 + _ticks * 0.075).clamp(0.08, 0.94);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  double get _minutesAway => 14 - (_progress * 12);
+
+  void _callRider() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Call $_riderName', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600)),
+        content: Text(widget.order.riderPhone, style: GoogleFonts.sourceSans3(fontSize: 14)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Calling $_riderName...', style: GoogleFonts.sourceSans3(fontSize: 13)), backgroundColor: AppColors.success));
+            },
+            child: Text('Call Now', style: GoogleFonts.sourceSans3(fontWeight: FontWeight.w700, color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary), onPressed: () => Navigator.pop(context)),
+        title: Text('Track Rider Live', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 18, color: AppColors.textPrimary)),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(16),
+              height: 280,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border)),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                  const Positioned.fill(child: CustomPaint(painter: _MapGridPainter())),
+                  Positioned.fill(child: CustomPaint(painter: _RoutePainter(progress: _progress))),
+                  Positioned(left: 24, top: 30, child: _MapMarker(icon: Icons.storefront, label: 'Shop', color: AppColors.primary)),
+                  Positioned(right: 24, bottom: 30, child: _MapMarker(icon: Icons.home, label: 'You', color: AppColors.success)),
+                  Positioned(
+                    top: 60,
+                    left: 30 + (240 * _progress),
+                    child: Transform.rotate(
+                      angle: 0.9,
+                      child: Container(
+                        width: 40, height: 40,
+                        decoration: BoxDecoration(color: AppColors.accent, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6)]),
+                        child: const Icon(Icons.two_wheeler, color: Colors.white, size: 22),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: 16, top: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 8)]),
+                      child: Text('Rider is ${_minutesAway.round()} min away', style: GoogleFonts.sourceSans3(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 52, height: 52,
+                        decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(14)),
+                        child: Icon(Icons.two_wheeler, color: AppColors.primary, size: 26),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_riderName, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                const Icon(Icons.star, size: 13, color: AppColors.starActive),
+                                const SizedBox(width: 3),
+                                Text('4.9', style: GoogleFonts.sourceSans3(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+                                const Text('  |  ', style: TextStyle(color: AppColors.textHint)),
+                                Text(widget.order.riderPhone, style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.phone, color: AppColors.success),
+                        onPressed: _callRider,
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Picked up', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textHint)),
+                            const SizedBox(height: 2),
+                            Text('Computer Village', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward, size: 18, color: AppColors.textHint),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('Delivering to', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textHint)),
+                            const SizedBox(height: 2),
+                            Text(widget.order.address.fullAddress, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(value: _progress, minHeight: 6, backgroundColor: AppColors.border, color: AppColors.primary),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Pickup', style: GoogleFonts.sourceSans3(fontSize: 10, color: AppColors.textHint)),
+                      Text('${(_progress * 100).round()}% complete', style: GoogleFonts.sourceSans3(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.primary)),
+                      Text('Delivery', style: GoogleFonts.sourceSans3(fontSize: 10, color: AppColors.textHint)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _callRider,
+                      icon: const Icon(Icons.phone_in_talk, size: 18),
+                      label: Text('Call Rider', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.success, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MapMarker extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _MapMarker({required this.icon, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 34, height: 34,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6)]),
+          child: Icon(icon, color: Colors.white, size: 18),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)]),
+          child: Text(label, style: GoogleFonts.sourceSans3(fontSize: 10, fontWeight: FontWeight.w700, color: color)),
+        ),
+      ],
+    );
+  }
+}
+
+class _MapGridPainter extends CustomPainter {
+  const _MapGridPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final gridPaint = Paint()
+      ..color = AppColors.border.withOpacity(0.4)
+      ..strokeWidth = 1;
+    const spacing = 28.0;
+    for (double x = 0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    }
+    for (double y = 0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+    final block = Paint()..color = AppColors.primary.withOpacity(0.06);
+    for (double x = 0; x < size.width; x += spacing * 4) {
+      for (double y = 0; y < size.height; y += spacing * 4) {
+        canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(x + 6, y + 6, spacing * 4 - 12, spacing * 4 - 12), const Radius.circular(8)), block);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _MapGridPainter oldDelegate) => false;
+}
+
+class _RoutePainter extends CustomPainter {
+  final double progress;
+  const _RoutePainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(44, 236)
+      ..cubicTo(80, 120, 150, 100, 200, 76);
+    final trace = Paint()
+      ..color = AppColors.primary.withOpacity(0.25)
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final live = Paint()
+      ..color = AppColors.primary
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    canvas.drawPath(path, trace);
+    final pathMetric = path.computeMetrics().first;
+    final cutPath = pathMetric.extractPath(0, pathMetric.length * progress);
+    canvas.drawPath(cutPath, live);
+  }
+
+  @override
+  bool shouldRepaint(covariant _RoutePainter oldDelegate) => oldDelegate.progress != progress;
 }

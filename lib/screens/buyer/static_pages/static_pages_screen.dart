@@ -5,7 +5,8 @@ import 'package:market_mirror_mobile/theme/app_theme.dart';
 final List<String> _pages = ['Help', 'Returns', 'About', 'Terms', 'Privacy'];
 
 class StaticPagesScreen extends StatefulWidget {
-  const StaticPagesScreen({super.key});
+  final String? initialPage;
+  const StaticPagesScreen({super.key, this.initialPage});
 
   @override
   State<StaticPagesScreen> createState() => _StaticPagesScreenState();
@@ -13,6 +14,14 @@ class StaticPagesScreen extends StatefulWidget {
 
 class _StaticPagesScreenState extends State<StaticPagesScreen> {
   String _selectedPage = 'Help';
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialPage != null && _pages.contains(widget.initialPage)) {
+      _selectedPage = widget.initialPage!;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +180,7 @@ class _AboutContent extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Our platform bridges the gap between traditional market shopping and modern e-commerce. We partner with trusted shops in major markets like Computer Village, Alaba International Market, and Trade Fair Complex to bring you quality products at competitive prices.',
+              'Our platform bridges the gap between traditional market shopping and modern e-commerce. We partner with trusted shops in major markets like Computer Village, Ikeja, to bring you quality products at competitive prices, with Alaba International Market joining soon.',
               style: GoogleFonts.sourceSans3(fontSize: 14, color: AppColors.textSecondary, height: 1.6),
             ),
             const SizedBox(height: 16),

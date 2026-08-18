@@ -15,15 +15,15 @@ final List<ProductWithShop> _allProducts = [
 ];
 
 final List<Shop> _allShops = [
-  Shop(id: 'shop_1', name: 'TechCity', category: 'Electronics', rating: 4.8, reviewCount: 128, productCount: 4, verified: true, location: 'Computer Village', market: 'Computer Village', city: 'Lagos'),
-  Shop(id: 'shop_2', name: 'PhoneHub', category: 'Phones', rating: 4.6, reviewCount: 95, productCount: 4, verified: true, location: 'Computer Village', market: 'Computer Village', city: 'Lagos'),
-  Shop(id: 'shop_3', name: 'GlobalFabrics', category: 'Fabrics', rating: 4.5, reviewCount: 72, productCount: 4, verified: true, location: 'Trade Fair Complex', market: 'Trade Fair Complex', city: 'Lagos'),
-  Shop(id: 'shop_4', name: 'Kemis Home Appliances', category: 'Appliances', rating: 4.7, reviewCount: 84, productCount: 4, verified: true, location: 'Alaba International Market', market: 'Alaba International Market', city: 'Lagos'),
-  Shop(id: 'shop_5', name: 'AutoParts Pro', category: 'Auto', rating: 4.4, reviewCount: 56, productCount: 4, verified: true, location: 'Alaba International Market', market: 'Alaba International Market', city: 'Lagos'),
-  Shop(id: 'shop_6', name: 'BeautyGlow Studio', category: 'Beauty', rating: 4.2, reviewCount: 43, productCount: 4, verified: false, location: 'Trade Fair Complex', market: 'Trade Fair Complex', city: 'Lagos'),
+  Shop(id: 'shop_1', name: 'TechCity', category: 'Electronics', rating: 4.8, reviewCount: 128, productCount: 4, verified: true, location: 'Shop A12, Otigba Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Otigba Plaza'),
+  Shop(id: 'shop_2', name: 'PhoneHub', category: 'Phones', rating: 4.6, reviewCount: 95, productCount: 4, verified: true, location: 'Shop B5, Otigba Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Otigba Plaza'),
+  Shop(id: 'shop_3', name: 'GlobalFabrics', category: 'Fabrics', rating: 4.5, reviewCount: 72, productCount: 4, verified: true, location: 'Shop C8, Memory Lane Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Memory Lane Plaza'),
+  Shop(id: 'shop_4', name: 'Kemis Home Appliances', category: 'Appliances', rating: 4.7, reviewCount: 84, productCount: 4, verified: true, location: 'Shop D15, Cooperative Building, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Cooperative Building'),
+  Shop(id: 'shop_5', name: 'AutoParts Pro', category: 'Auto', rating: 4.4, reviewCount: 56, productCount: 4, verified: true, location: 'Shop E7, Computer Plaza, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Computer Plaza'),
+  Shop(id: 'shop_6', name: 'BeautyGlow Studio', category: 'Beauty', rating: 4.2, reviewCount: 43, productCount: 4, verified: false, location: 'Shop F3, Data Centre Building, Computer Village, Ikeja', market: 'Computer Village', city: 'Lagos', building: 'Data Centre Building'),
 ];
 
-final List<String> _markets = ['Computer Village, Ikeja', 'Alaba International Market, Ojo', 'Trade Fair Complex, Badagry'];
+final List<String> _markets = ['Computer Village, Ikeja', 'Alaba International Market, Ojo (Coming Soon)'];
 
 final List<String> _suggestions = ['iPhone', 'Samsung TV', 'Swiss Lace', 'PS5', 'Air Conditioner', 'Freezer', 'Foundation'];
 
@@ -63,7 +63,12 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
 
   List<Shop> get _shopResults {
     if (_searchCtrl.text.isEmpty) return [];
-    return _allShops.where((s) => s.name.toLowerCase().contains(_searchCtrl.text.toLowerCase())).toList();
+    final q = _searchCtrl.text.toLowerCase();
+    return _allShops.where((s) =>
+        s.name.toLowerCase().contains(q) ||
+        s.location.toLowerCase().contains(q) ||
+        s.building.toLowerCase().contains(q) ||
+        s.shopNumber.toLowerCase().contains(q)).toList();
   }
 
   List<String> get _marketResults {
@@ -91,7 +96,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
             onChanged: (_) => setState(() {}),
             style: GoogleFonts.sourceSans3(fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Search products, shops, markets...',
+              hintText: 'Search products, shops, markets or addresses...',
               hintStyle: GoogleFonts.sourceSans3(fontSize: 14, color: AppColors.textHint),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -261,7 +266,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(s.name, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
-                  Text('${s.category} - ${s.city}', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textSecondary)),
+                  Text(s.location.isEmpty ? '${s.category} - ${s.city}' : s.location, style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:market_mirror_mobile/theme/app_theme.dart';
+import '../static_pages/static_pages_screen.dart';
 
 final List<String> _categories = ['Electronics', 'Phones', 'Fabrics', 'Appliances', 'Auto', 'Beauty', 'Groceries'];
-final List<String> _markets = ['Computer Village, Ikeja', 'Alaba International Market, Ojo', 'Trade Fair Complex, Badagry', 'Balogun Market, Lagos', 'Mile 12 Market, Lagos', 'Kurmi Market, Kano', 'Ogbete Main Market, Enugu', 'Bodija Market, Ibadan'];
+final List<String> _markets = ['Computer Village, Ikeja', 'Alaba International Market, Ojo (Coming Soon)'];
 
 class VendorPagesScreen extends StatefulWidget {
   const VendorPagesScreen({super.key});
@@ -14,15 +15,22 @@ class VendorPagesScreen extends StatefulWidget {
 
 class _VendorPagesScreenState extends State<VendorPagesScreen> with SingleTickerProviderStateMixin {
   late TabController _tabCtrl;
+  final _formKey = GlobalKey<FormState>();
 
+  final _nameCtrl = TextEditingController();
   final _shopNameCtrl = TextEditingController();
-  final _ownerCtrl = TextEditingController();
+  final _buildingCtrl = TextEditingController();
+  final _shopNumberCtrl = TextEditingController();
+  final _shopAddressCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
+
   String _selectedCategory = _categories.first;
   String _selectedMarket = _markets.first;
-  final _descCtrl = TextEditingController();
+  String? _idFileName;
+  bool _agreed = false;
 
-  bool _hasShop = false;
+  VendorApplication? _application;
 
   @override
   void initState() {
@@ -33,11 +41,107 @@ class _VendorPagesScreenState extends State<VendorPagesScreen> with SingleTicker
   @override
   void dispose() {
     _tabCtrl.dispose();
+    _nameCtrl.dispose();
     _shopNameCtrl.dispose();
-    _ownerCtrl.dispose();
+    _buildingCtrl.dispose();
+    _shopNumberCtrl.dispose();
+    _shopAddressCtrl.dispose();
+    _emailCtrl.dispose();
     _phoneCtrl.dispose();
-    _descCtrl.dispose();
     super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please fill in all required fields.', style: GoogleFonts.sourceSans3(fontSize: 13)),
+        backgroundColor: AppColors.error,
+      ));
+      return;
+    }
+    if (_idFileName == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please upload a valid ID.', style: GoogleFonts.sourceSans3(fontSize: 13)),
+        backgroundColor: AppColors.error,
+      ));
+      return;
+    }
+    if (!_agreed) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please accept the terms and conditions.', style: GoogleFonts.sourceSans3(fontSize: 13)),
+        backgroundColor: AppColors.error,
+      ));
+      return;
+    }
+
+    setState(() {
+      _application = VendorApplication(
+        name: _nameCtrl.text.trim(),
+        shopName: _shopNameCtrl.text.trim(),
+        building: _buildingCtrl.text.trim(),
+        shopNumber: _shopNumberCtrl.text.trim(),
+        shopAddress: _shopAddressCtrl.text.trim(),
+        email: _emailCtrl.text.trim(),
+        phone: _phoneCtrl.text.trim(),
+        idFile: _idFileName!,
+        industry: _selectedCategory,
+        market: _selectedMarket,
+      );
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Application Received — Pending Approval', style: GoogleFonts.sourceSans3(fontSize: 13)),
+      backgroundColor: AppColors.success,
+    ));
+    _tabCtrl.animateTo(1);
+  }
+
+  Future<void> _pickIdFile() async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Text('Upload a valid ID', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+            const SizedBox(height: 4),
+            Text('Choose a document file to attach', style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary)),
+            const SizedBox(height: 12),
+            const Divider(height: 1, color: AppColors.divider),
+            ListTile(
+              leading: const Icon(Icons.badge_outlined, color: AppColors.primary),
+              title: Text('NIN Slip', style: GoogleFonts.sourceSans3(fontSize: 14)),
+              subtitle: Text('nin_slip.jpg', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textHint)),
+              onTap: () => Navigator.pop(ctx, 'nin_slip.jpg'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.directions_car_outlined, color: AppColors.primary),
+              title: Text("Driver's License", style: GoogleFonts.sourceSans3(fontSize: 14)),
+              subtitle: Text('drivers_license.jpg', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textHint)),
+              onTap: () => Navigator.pop(ctx, 'drivers_license.jpg'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.how_to_vote_outlined, color: AppColors.primary),
+              title: Text("Voter's Card", style: GoogleFonts.sourceSans3(fontSize: 14)),
+              subtitle: Text('voters_card.jpg', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textHint)),
+              onTap: () => Navigator.pop(ctx, 'voters_card.jpg'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.account_balance_wallet_outlined, color: AppColors.primary),
+              title: Text('International Passport', style: GoogleFonts.sourceSans3(fontSize: 14)),
+              subtitle: Text('passport.jpg', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textHint)),
+              onTap: () => Navigator.pop(ctx, 'passport.jpg'),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+    if (choice != null) {
+      setState(() => _idFileName = choice);
+    }
   }
 
   @override
@@ -66,22 +170,27 @@ class _VendorPagesScreenState extends State<VendorPagesScreen> with SingleTicker
         controller: _tabCtrl,
         children: [
           _OpenShopTab(
+            formKey: _formKey,
+            nameCtrl: _nameCtrl,
             shopNameCtrl: _shopNameCtrl,
-            ownerCtrl: _ownerCtrl,
+            buildingCtrl: _buildingCtrl,
+            shopNumberCtrl: _shopNumberCtrl,
+            shopAddressCtrl: _shopAddressCtrl,
+            emailCtrl: _emailCtrl,
             phoneCtrl: _phoneCtrl,
             selectedCategory: _selectedCategory,
             selectedMarket: _selectedMarket,
-            descCtrl: _descCtrl,
             categories: _categories,
             markets: _markets,
+            idFileName: _idFileName,
+            agreed: _agreed,
             onCategoryChanged: (v) => setState(() => _selectedCategory = v!),
             onMarketChanged: (v) => setState(() => _selectedMarket = v!),
-            onSubmit: () {
-              setState(() => _hasShop = true);
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Shop application submitted!', style: GoogleFonts.sourceSans3(fontSize: 13)), backgroundColor: AppColors.success));
-            },
+            onPickIdFile: _pickIdFile,
+            onAgreedChanged: (v) => setState(() => _agreed = v ?? false),
+            onSubmit: _submit,
           ),
-          _DashboardTab(hasShop: _hasShop),
+          _DashboardTab(application: _application),
           _PoliciesTab(),
         ],
       ),
@@ -89,30 +198,72 @@ class _VendorPagesScreenState extends State<VendorPagesScreen> with SingleTicker
   }
 }
 
+class VendorApplication {
+  final String name;
+  final String shopName;
+  final String building;
+  final String shopNumber;
+  final String shopAddress;
+  final String email;
+  final String phone;
+  final String idFile;
+  final String industry;
+  final String market;
+
+  VendorApplication({
+    required this.name,
+    required this.shopName,
+    required this.building,
+    required this.shopNumber,
+    required this.shopAddress,
+    required this.email,
+    required this.phone,
+    required this.idFile,
+    required this.industry,
+    required this.market,
+  });
+}
+
 class _OpenShopTab extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameCtrl;
   final TextEditingController shopNameCtrl;
-  final TextEditingController ownerCtrl;
+  final TextEditingController buildingCtrl;
+  final TextEditingController shopNumberCtrl;
+  final TextEditingController shopAddressCtrl;
+  final TextEditingController emailCtrl;
   final TextEditingController phoneCtrl;
   final String selectedCategory;
   final String selectedMarket;
-  final TextEditingController descCtrl;
   final List<String> categories;
   final List<String> markets;
+  final String? idFileName;
+  final bool agreed;
   final ValueChanged<String?> onCategoryChanged;
   final ValueChanged<String?> onMarketChanged;
+  final VoidCallback onPickIdFile;
+  final ValueChanged<bool?> onAgreedChanged;
   final VoidCallback onSubmit;
 
   const _OpenShopTab({
+    required this.formKey,
+    required this.nameCtrl,
     required this.shopNameCtrl,
-    required this.ownerCtrl,
+    required this.buildingCtrl,
+    required this.shopNumberCtrl,
+    required this.shopAddressCtrl,
+    required this.emailCtrl,
     required this.phoneCtrl,
     required this.selectedCategory,
     required this.selectedMarket,
-    required this.descCtrl,
     required this.categories,
     required this.markets,
+    required this.idFileName,
+    required this.agreed,
     required this.onCategoryChanged,
     required this.onMarketChanged,
+    required this.onPickIdFile,
+    required this.onAgreedChanged,
     required this.onSubmit,
   });
 
@@ -120,57 +271,142 @@ class _OpenShopTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(width: 48, height: 48, decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.storefront, color: AppColors.primary, size: 26)),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Open a Shop', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-                    Text('Start selling on Market Mirror', style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary)),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _field('Shop Name', shopNameCtrl),
-            const SizedBox(height: 12),
-            _field('Owner Name', ownerCtrl),
-            const SizedBox(height: 12),
-            _field('Phone Number', phoneCtrl),
-            const SizedBox(height: 12),
-            _dropdown('Category', selectedCategory, categories, onCategoryChanged),
-            const SizedBox(height: 12),
-            _dropdown('Market', selectedMarket, markets, onMarketChanged),
-            const SizedBox(height: 12),
-            _field('Shop Description', descCtrl, maxLines: 4),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity, height: 50,
-              child: ElevatedButton(
-                onPressed: onSubmit,
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
-                child: Text('Submit Application', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white)),
+      child: Form(
+        key: formKey,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(width: 48, height: 48, decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.storefront, color: AppColors.primary, size: 26)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Open a Shop', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+                        Text('Your application is reviewed by an admin', style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Text('Personal & Business Details', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              const SizedBox(height: 12),
+              _field('Name', nameCtrl, keyboardType: TextInputType.name),
+              const SizedBox(height: 12),
+              _field('Business name', shopNameCtrl),
+              const SizedBox(height: 12),
+              _field('Building name or number', buildingCtrl),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(child: _field('Shop number', shopNumberCtrl)),
+                  const SizedBox(width: 10),
+                  Expanded(child: _dropdown('Industry', selectedCategory, categories, onCategoryChanged)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _field('Shop address', shopAddressCtrl),
+              const SizedBox(height: 12),
+              _dropdown('Market', selectedMarket, markets, onMarketChanged),
+              const SizedBox(height: 12),
+              _field('Email', emailCtrl, keyboardType: TextInputType.emailAddress),
+              const SizedBox(height: 12),
+              _field('Phone', phoneCtrl, keyboardType: TextInputType.phone),
+              const SizedBox(height: 16),
+              Text('Valid ID Upload', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: onPickIdFile,
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: idFileName == null ? AppColors.background : AppColors.successLight,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: idFileName == null ? AppColors.border : AppColors.success),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(idFileName == null ? Icons.upload_file_outlined : Icons.check_circle_outline, color: idFileName == null ? AppColors.textSecondary : AppColors.success),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          idFileName == null ? 'Upload a valid ID (NIN, Driver\'s License, Voter\'s Card)' : 'ID attached: $idFileName',
+                          style: GoogleFonts.sourceSans3(fontSize: 12, color: idFileName == null ? AppColors.textSecondary : AppColors.success, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right, color: AppColors.textHint),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 24,
+                    child: Checkbox(
+                      value: agreed,
+                      onChanged: onAgreedChanged,
+                      activeColor: AppColors.primary,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary, height: 1.4),
+                        children: [
+                          const TextSpan(text: 'I agree to the '),
+                          WidgetSpan(
+                            alignment: PlaceholderAlignment.middle,
+                            child: GestureDetector(
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StaticPagesScreen(initialPage: 'Terms'))),
+                              child: Text('Terms & Conditions', style: GoogleFonts.sourceSans3(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary, decoration: TextDecoration.underline)),
+                            ),
+                          ),
+                          const TextSpan(text: ' and seller policies.'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity, height: 50,
+                child: ElevatedButton(
+                  onPressed: onSubmit,
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
+                  child: Text('Submit Application', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white)),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: Text('All fields are required', style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textHint)),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _field(String label, TextEditingController ctrl, {int maxLines = 1}) {
-    return TextField(
+  Widget _field(String label, TextEditingController ctrl, {TextInputType? keyboardType}) {
+    return TextFormField(
       controller: ctrl,
-      maxLines: maxLines,
+      keyboardType: keyboardType,
       style: GoogleFonts.sourceSans3(fontSize: 14),
+      validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: GoogleFonts.sourceSans3(fontSize: 13, color: AppColors.textSecondary),
@@ -203,12 +439,13 @@ class _OpenShopTab extends StatelessWidget {
 }
 
 class _DashboardTab extends StatelessWidget {
-  final bool hasShop;
-  const _DashboardTab({required this.hasShop});
+  final VendorApplication? application;
+  const _DashboardTab({required this.application});
 
   @override
   Widget build(BuildContext context) {
-    if (!hasShop) {
+    final app = application;
+    if (app == null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -217,13 +454,7 @@ class _DashboardTab extends StatelessWidget {
             const SizedBox(height: 16),
             Text('No Shop Yet', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
             const SizedBox(height: 6),
-            Text('Open a shop to see your dashboard', style: GoogleFonts.sourceSans3(fontSize: 14, color: AppColors.textSecondary)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 0),
-              child: Text('Open a Shop', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white)),
-            ),
+            Text('Open a shop to see your application status', style: GoogleFonts.sourceSans3(fontSize: 14, color: AppColors.textSecondary)),
           ],
         ),
       );
@@ -232,50 +463,93 @@ class _DashboardTab extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(child: _kpiCard('Today\'s Sales', '₦125,000', AppColors.kpiBlue, Icons.trending_up)),
-              const SizedBox(width: 10),
-              Expanded(child: _kpiCard('Orders', '12', AppColors.kpiGreen, Icons.receipt_long)),
-            ],
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.warningLight,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.warning),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.hourglass_top, color: AppColors.warning),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Application Received', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.warning)),
+                      const SizedBox(height: 2),
+                      Text('Your application is pending admin approval. You will be able to manage your shop once it is approved.', style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.warning, height: 1.4)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(child: _kpiCard('Products', '24', AppColors.kpiOrange, Icons.inventory_2)),
-              const SizedBox(width: 10),
-              Expanded(child: _kpiCard('Revenue (30d)', '₦2.4M', AppColors.kpiPurple, Icons.account_balance_wallet)),
-            ],
+          const SizedBox(height: 14),
+          Text('Application Status', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
+            child: Column(
+              children: [
+                _statusChip(),
+                const SizedBox(height: 12),
+                const Divider(height: 1, color: AppColors.divider),
+                const SizedBox(height: 8),
+                _infoRow(Icons.person_outline, 'Name', app.name),
+                _infoRow(Icons.storefront, 'Business name', app.shopName),
+                _infoRow(Icons.apartment, 'Building', app.building),
+                _infoRow(Icons.numbers, 'Shop number', app.shopNumber),
+                _infoRow(Icons.map, 'Shop address', app.shopAddress),
+                _infoRow(Icons.email_outlined, 'Email', app.email),
+                _infoRow(Icons.phone_outlined, 'Phone', app.phone),
+                _infoRow(Icons.category_outlined, 'Industry', app.industry),
+                _infoRow(Icons.store_mall_directory_outlined, 'Market', app.market),
+                _infoRow(Icons.description_outlined, 'ID file', app.idFile),
+              ],
+            ),
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(child: _kpiCard('Pending Orders', '3', AppColors.kpiPink, Icons.pending_actions)),
-              const SizedBox(width: 10),
-              Expanded(child: _kpiCard('Rating', '4.8', AppColors.kpiTeal, Icons.star)),
-            ],
+          const SizedBox(height: 14),
+          Center(
+            child: Text('Status: Pending Approval', style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary)),
           ),
         ],
       ),
     );
   }
 
-  Widget _kpiCard(String label, String value, Color color, IconData icon) {
+  Widget _statusChip() {
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.border)),
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(color: AppColors.warningLight, borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.warning)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.hourglass_top, size: 14, color: AppColors.warning),
+          const SizedBox(width: 6),
+          Text('Pending Approval', style: GoogleFonts.sourceSans3(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.warning)),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(width: 32, height: 32, decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)), child: Icon(icon, color: color, size: 18)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(value, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
-          Text(label, style: GoogleFonts.sourceSans3(fontSize: 11, color: AppColors.textSecondary)),
+          Icon(icon, size: 16, color: AppColors.textHint),
+          const SizedBox(width: 10),
+          SizedBox(width: 96, child: Text(label, style: GoogleFonts.sourceSans3(fontSize: 12, color: AppColors.textSecondary))),
+          Expanded(child: Text(value, style: GoogleFonts.sourceSans3(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textPrimary))),
         ],
       ),
     );
